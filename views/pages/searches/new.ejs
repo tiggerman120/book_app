@@ -1,19 +1,31 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Search For Books</title>
-    </head>
 
-    <body>
+<head>
+    <title>Search For Books</title>
+    <link rel="stylesheet" type="text/css" href="/styles/base.css">
+</head>
+
+<body>
+    <header>
+        <div id="headerDiv">
+            <h1 id="headerBooks">Best Books!</h1><img src="/assets/burgerMenu.jpg" id="burgerMenu">
+        </div>
+        <h2>Search by Title or Author</h2>
+    </header>
+    <main>
         <form action="/searches" method="post">
-        <fieldset>
-            <input type="text" name="search" placeholder="search..." required>
-        </fieldset>
-        <fieldset>
-            <input type="radio" name="search" value="title" required> Title
-            <input type="radio" name="search" value="author" required> Author
-        </fieldset>
-        <button type="submit">Search GBooks API</button>
+            <fieldset>
+                <input class="inputQuery" type="text" name="search" placeholder="Enter Title or Author" required>
+            </fieldset>
+            <fieldset>
+                <div class="radioDiv">Title<input type="radio" name="search" value="title" required></div>
+
+                <div class="radioDiv">Author<input type="radio" name="search" value="author" required></div>
+            </fieldset>
+            <button type="submit">Search GBooks API</button>
         </form>
-    </body>
+    </main>
+</body>
+
 </html>

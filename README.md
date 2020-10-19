@@ -25,11 +25,11 @@
 
 Number and name of feature: #1 Setup
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 1 hr
 
-Start time: _____
+Start time: 1:00
 
-Finish time: _____
+Finish time: 2:00
 
 Actual time needed to complete: 1hr
 
@@ -41,6 +41,30 @@ Estimate of time needed to complete: 30min
 
 Start time: 2:05
 
-Finish time: _____
+Finish time: 2:25
 
-Actual time needed to complete: _____
+Actual time needed to complete: 20 min
+
+-----------------------------------------------------------------------------------------
+
+Number and name of feature: #3 - Get Results
+
+Estimate of time needed to complete: 30min
+
+Start time: 2:35
+
+Finish time: 
+
+Actual time needed to complete: 
+
+-----------------------------------------------------------------------------------------
+
+Number and name of feature: #3 - Get Results
+
+Estimate of time needed to complete: 30min
+
+Start time: 2:35
+
+Finish time: 
+
+Actual time needed to complete: 

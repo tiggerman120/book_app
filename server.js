@@ -26,9 +26,18 @@ app.get('/' , (req, res) => {
   res.render('pages/searches/new');
 });
 
-//app.post('/')
+app.get('/searches' , (req, res) => {
+    res.render('pages/searches/show', {
+        booksArray: booksArray
+    });
+});
+
+app.post('/searches' , createSearch);
+
+var booksArray = [];
+
 function createSearch(req,res) {
-  let url='https://www.googleapis.com/books/v1/volumes?q=';
+  let url='https://www.googleapis.com/books/v1/volumes?maxResults=10&projection=full&q=';
   if (req.body.search[1] === 'title') {
     url += `+intitle:${req.body.search[0]}`;
   }
@@ -36,8 +45,13 @@ function createSearch(req,res) {
     url += `+inauthor:${req.body.search[0]}`;
   }
   superagent.get(url)
-    .then(data => {
-      res.json(data.text);
+  .then(data => {
+        console.log(data.body.items)
+        data.body.items.forEach(item => {
+            booksArray.push(new Book(item))
+        })
+        console.log(booksArray)
+      res.render('pages/searches/show' ,  {booksArray:booksArray});
     })
     .catch(error => {
       console.error(error);
@@ -46,3 +60,11 @@ function createSearch(req,res) {
 app.listen(PORT, () => {
   console.log('server is up at ' + PORT);
 });
+
+function Book(bookData) {
+this.img = bookData.volumeInfo.imageLinks.thumbnail;
+this.title = bookData.volumeInfo.title;
+this.author = bookData.volumeInfo.authors;
+this.description = bookData.volumeInfo.description;
+}
+
