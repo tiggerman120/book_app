@@ -1,3 +1,47 @@
+@import 'reset.css';
+@import 'layout.css';
+@import 'modules.css';
+
+
+h1 {
+    display: inline;
+    font: 24pt Arial;
+    color: white;
+}
+
+#headerDiv {
+    background-color: black;
+    padding: 15px 20px;
+}
+
+#burgerMenu {
+    float: right;
+    height: 24pt;
+
+}
+
+h2 {
+    color: white;
+    background: darkgrey;
+    padding: 20px;
+    text-align: center;
+    font: 20pt Arial;
+}
+
+main {
+   margin: auto;
+   max-width: 50vw;
+}
+
 body {
-    background-color: red;
+    background: lightgray;
+    max-width: 960px;
+    margin: auto;
+}
+
+.inputQuery {
+    border: none;
+    margin: 20px;
+    color: black;
+    width: 90%;
 }

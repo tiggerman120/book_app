@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Results</title>
+    <link rel="stylesheet" type="text/css" href="/styles/base.css">
+</head>
+
+<body>
+    <ul>
+        <% booksArray.forEach(book => {%>
+        <li>
+            <img src=<%= book.img%>/>
+            <p>Title: <%= book.title %></p>
+            <p>Author: <%= book.author %></p>
+            <p>Description: <%= book.description %></p>
+        </li>
+        <%}) %>
+    </ul>
+
+</body>
+
+</html>
