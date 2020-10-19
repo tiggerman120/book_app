@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Search For Books</title>
+    </head>
+
+    <body>
+        <form action="/searches" method="post">
+        <fieldset>
+            <input type="text" name="search" placeholder="search..." required>
+        </fieldset>
+        <fieldset>
+            <input type="radio" name="search" value="title" required> Title
+            <input type="radio" name="search" value="author" required> Author
+        </fieldset>
+        <button type="submit">Search GBooks API</button>
+        </form>
+    </body>
+</html>

@@ -23,7 +23,7 @@
 
 ## Features
 
-Number and name of feature: ________________________________
+Number and name of feature: #1 Setup
 
 Estimate of time needed to complete: _____
 
@@ -31,15 +31,15 @@ Start time: _____
 
 Finish time: _____
 
-Actual time needed to complete: _____
+Actual time needed to complete: 1hr
 
 -----------------------------------------------------------------------------------------
 
-Number and name of feature: ________________________________
+Number and name of feature: #2 - Search
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 30min
 
-Start time: _____
+Start time: 2:05
 
 Finish time: _____
 
