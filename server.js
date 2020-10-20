@@ -34,6 +34,10 @@ app.get('/searches', (req, res) => {
 
 app.post('/searches', createSearch);
 
+app.get('*',(req,res) => {
+  res.render('pages/error', { error: new Error('Page not found')});
+});
+
 var booksArray = [];
 
 function createSearch(req, res) {
@@ -49,10 +53,12 @@ function createSearch(req, res) {
       data.body.items.map((item) => booksArray.push(new Book(item)));
       res.render('pages/searches/show', { booksArray: booksArray });
     })
-    .catch(error => {
-      console.error(error);
+    .catch(err => {
+      console.error(err);
+      res.render('pages/error',{error : err});
     });
 }
+
 app.listen(PORT, () => {
   console.log('server is up at ' + PORT);
 });
