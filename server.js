@@ -32,13 +32,13 @@ app.get('/searches', (req, res) => {
   });
 });
 
-app.get('/searches/new', (req,res) => {
+app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
 app.post('/searches', createSearch);
 
-app.get('*',(req,res) => {
-  res.render('pages/error', { error: new Error('Page not found')});
+app.get('*', (req, res) => {
+  res.render('pages/error', { error: new Error('Page not found') });
 });
 
 var booksArray = [];
@@ -58,7 +58,7 @@ function createSearch(req, res) {
     })
     .catch(err => {
       console.error(err);
-      res.render('pages/error',{error : err});
+      res.render('pages/error', { error: err });
     });
 }
 
@@ -67,11 +67,18 @@ app.listen(PORT, () => {
 });
 
 function Book(bookData) {
-  if (bookData.volumeInfo.imageLinks.thumbnail.startsWith('https')) {
-    this.img = bookData.volumeInfo.imageLinks.thumbnail ? bookData.volumeInfo.imageLinks.thumbnail : `https://i.imgur.com/J5LVHEL.jpg`;
+  console.log(bookData);
+  if (bookData.volumeInfo.imageLinks && bookData.volumeInfo.imageLinks.thumbnail) {
+
+    if (!bookData.volumeInfo.imageLinks.thumbnail.startsWith('https')) {
+      this.img = bookData.volumeInfo.imageLinks.thumbnail.replace('http', 'https');
+    }
+    else {
+      this.img = bookData.volumeInfo.imageLinks.thumbnail;
+    }
   }
   else {
-    this.img = bookData.volumeInfo.imageLinks.thumbnail ? bookData.volumeInfo.imageLinks.thumbnail.replace('http', 'https') : `https://i.imgur.com/J5LVHEL.jpg`;
+    this.img = `https://i.imgur.com/J5LVHEL.jpg`;
   }
   this.title = bookData.volumeInfo.title ? bookData.volumeInfo.title : `Book Title (Unknown)`;
   this.author = bookData.volumeInfo.authors ? bookData.volumeInfo.authors : `Book Authors Unknown`;
