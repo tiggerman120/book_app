@@ -52,6 +52,7 @@ function createSearch(req, res) {
     url += `+inauthor:${req.body.search[0]}`;
   }
   superagent.get(url)
+  
     .then(data => {
       data.body.items.map((item) => booksArray.push(new Book(item)));
       res.render('pages/searches/show', { booksArray: booksArray });
