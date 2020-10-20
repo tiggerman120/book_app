@@ -23,7 +23,7 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.render('pages/searches/new');
+  res.render('pages/index');
 });
 
 app.get('/searches', (req, res) => {
@@ -32,6 +32,9 @@ app.get('/searches', (req, res) => {
   });
 });
 
+app.get('/searches/new', (req,res) => {
+  res.render('pages/searches/new');
+});
 app.post('/searches', createSearch);
 
 app.get('*',(req,res) => {
