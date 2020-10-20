@@ -1,0 +1,17 @@
+#headerDiv {
+    background-color: black;
+    padding: 15px 20px;
+}
+
+#burgerMenu {
+    float: right;
+    height: 24pt;
+
+}
+
+.bookResult {
+    background-color: lightgrey;
+    width: 90%;
+    margin: 40px;
+    padding: 40px;
+}
