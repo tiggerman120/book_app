@@ -5,6 +5,7 @@ const express = require('express');
 const env = require('dotenv');
 const app = express();
 const pg = require('pg');
+const methodOverride = require('method-override');
 
 env.config();
 
@@ -12,6 +13,7 @@ env.config();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
+app.use(methodOverride('_method')); //method override is the hack for put/delete on the browser
 
 const superagent = require('superagent');
 
@@ -19,18 +21,10 @@ const superagent = require('superagent');
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL)
 
-
-
 app.get('/hello', (req, res) => {
   res.render('pages/index');
 });
 app.get('/', (req, res) => {
-  let SQL = `SELECT * FROM books`;
-  client.query(SQL)
-    .then(data => {
-      res.render('pages/index', {result: data.rows});
-    })
-    
   res.render('pages/index');
 
 });
@@ -75,22 +69,12 @@ function createSearch(req, res) {
     });
 }
 
-function databaseStorage(bookData) {
-  let sql = 'INSERT INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
-  //controller
-  let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
-  //controller
-  client.query(sql, sqlArr);//this asks the sql client for the information
-  //request asks postgres
-}
-app.listen(PORT, () => {
-  console.log('server is up at ' + PORT);
-});
+
 
 function Book(bookData) {
   console.log(bookData);
   if (bookData.volumeInfo.imageLinks && bookData.volumeInfo.imageLinks.thumbnail) {
-
+    
     if (!bookData.volumeInfo.imageLinks.thumbnail.startsWith('https')) {
       this.img = bookData.volumeInfo.imageLinks.thumbnail.replace('http', 'https');
     }
@@ -106,3 +90,23 @@ function Book(bookData) {
   this.description = bookData.volumeInfo.description ? bookData.volumeInfo.description : `Book description unavailable`;
 }
 
+function databaseStorage(req, res) {
+  let sql = 'INSERT * INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
+  //controller / destructuring
+  let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
+
+  //controller
+
+
+  return client.query(sql, sqlArr)//this asks the sql client for the information
+    //request asks postgres
+    .then(res.redirect('/'))
+    .catch(err => console.error(err))
+}
+
+
+
+
+app.listen(PORT, () => {
+  console.log('server is up at ' + PORT);
+});
