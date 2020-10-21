@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 app.use(methodOverride('_method')); //method override is the hack for put/delete on the browser
-
+app.get('/tasks/:id', getOneId)///here
 const superagent = require('superagent');
 
 //server constants
@@ -38,6 +38,8 @@ app.get('/searches/new', (req, res) => {
 app.get('/searches/index', (req, res) => {
   res.render('pages/index');
 });
+
+app.post('/books', saveOneBook)
 
 app.post('/searches/new', createSearch);
 
@@ -101,23 +103,33 @@ function Book(bookData) {
   this.description = bookData.volumeInfo.description ? bookData.volumeInfo.description : `Book description unavailable`;
 }
 
-// function databaseStorage(req, res) {
-//   let sql = 'INSERT * INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
-//   //controller / destructuring
-//   let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
+function saveOneBook(req, res) {
+  const { title, author, description, thumbnail } = req.body
+  let sql = 'INSERT INTO books (title, author, description, thumbnail) VALUES ($1, $2, $3, $4) RETURNING id;'
+  //controller / destructuring
+  let sqlArr = [title, author, description, thumbnail];
 
-  //controller
+  client.query(sql, sqlArr)//this asks the sql client for the information
+    //request asks postgres
+    .then( item => {
+      res.redirect(`/tasks/${item.rows[0].id}`)    
+      })      
+    .catch(err => console.error(err))
+  }
+  ////here
+  function getOneId(req, res) {
+    let SQL = 'SELECT * FROM books WHERE id=$1';
+    let values = [req.body.rows];
 
+    return client.query(SQL, values)
+      .then(data => {
+        console.log(data)
+        res.render('pages/books/detail.ejs', { booksArray: data.rows[0] }) //sending back single book
+      })
+      .catch(err => console.error(err));
+  };
+  /////here
 
-//   return client.query(sql, sqlArr)//this asks the sql client for the information
-//     //request asks postgres
-//     .then(res.redirect('/'))
-//     .catch(err => console.error(err))
-// }
-
-
-
-
-app.listen(PORT, () => {
-  console.log('server is up at ' + PORT);
-});
+  app.listen(PORT, () => {
+    console.log('server is up at ' + PORT);
+  });
