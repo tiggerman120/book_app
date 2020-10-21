@@ -21,22 +21,26 @@ const superagent = require('superagent');
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL)
 
+
+app.get('/', putOnIndex)
+
 app.get('/hello', (req, res) => {
   res.render('pages/index');
 });
-app.get('/', (req, res) => {
-  res.render('pages/index');
-
-});
-app.get('/searches', (req, res) => {
-  res.render('pages/searches/show', {
-    booksArray: booksArray
-  });
-});
+// app.get('/searches', (req, res) => {
+//   res.render('pages/searches/show', {
+//     booksArray: booksArray
+//   });
+// });
 app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
-app.post('/searches', createSearch);
+app.get('/searches/index', (req, res) => {
+  res.render('pages/index');
+});
+
+app.post('/searches/new', createSearch);
+
 app.get('*', (req, res) => {
   res.render('pages/error', { error: new Error('Page not found') });
 });
@@ -45,7 +49,7 @@ app.get('*', (req, res) => {
 client.connect();
 client.on('error', err => console.log(err));
 
-var booksArray = [];
+
 
 function createSearch(req, res) {
 
@@ -58,23 +62,30 @@ function createSearch(req, res) {
     url += `+inauthor:${req.body.search[0]}`;
   }
   superagent.get(url)
-
     .then(data => {
-      data.body.items.map((item) => booksArray.push(new Book(item)));
-      res.render('pages/searches/show', { booksArray: booksArray });
+      var booksToRender = data.body.items
+      var instance = booksToRender.map((item) => (new Book(item)));
+      // res.render('pages/index', { booksArray: instance });
+      res.render('pages/searches/show', { booksArray: instance });
     })
     .catch(err => {
       console.error(err);
       res.render('pages/error', { error: err });
     });
 }
-
-
+function putOnIndex(req, res) {
+  let insert = 'SELECT * FROM books';
+  return client.query(insert)
+    .then(data => {
+      // console.log(data);
+      // var instance = data.body.item.map((item) => booksArray.push(new Book(item)));
+      res.render('pages/index', { booksArray: data.rows });
+    })
+}
 
 function Book(bookData) {
-  console.log(bookData);
   if (bookData.volumeInfo.imageLinks && bookData.volumeInfo.imageLinks.thumbnail) {
-    
+
     if (!bookData.volumeInfo.imageLinks.thumbnail.startsWith('https')) {
       this.img = bookData.volumeInfo.imageLinks.thumbnail.replace('http', 'https');
     }
@@ -90,19 +101,19 @@ function Book(bookData) {
   this.description = bookData.volumeInfo.description ? bookData.volumeInfo.description : `Book description unavailable`;
 }
 
-function databaseStorage(req, res) {
-  let sql = 'INSERT * INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
-  //controller / destructuring
-  let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
+// function databaseStorage(req, res) {
+//   let sql = 'INSERT * INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
+//   //controller / destructuring
+//   let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
 
   //controller
 
 
-  return client.query(sql, sqlArr)//this asks the sql client for the information
-    //request asks postgres
-    .then(res.redirect('/'))
-    .catch(err => console.error(err))
-}
+//   return client.query(sql, sqlArr)//this asks the sql client for the information
+//     //request asks postgres
+//     .then(res.redirect('/'))
+//     .catch(err => console.error(err))
+// }
 
 
 
