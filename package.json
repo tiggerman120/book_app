@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "watch": "nodemon server.js",
-    "dbrun": "psql -f data/books.sql -d book_app"
+    "watch": "nodemon server.js"
   },
   "repository": {
     "type": "git",
