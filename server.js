@@ -1,49 +1,60 @@
 'use strict';
 
+//3rd party dependancies
 const express = require('express');
-
 const env = require('dotenv');
-
 const app = express();
+const pg = require('pg');
 
 env.config();
 
-app.set('view engine', 'ejs');
-
+//front end config
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static('./public'));
+app.set('view engine', 'ejs');
 
 const superagent = require('superagent');
 
+//server constants
 const PORT = process.env.PORT || 3000;
+const client = new pg.Client(process.env.DATABASE_URL)
+
+
 
 app.get('/hello', (req, res) => {
   res.render('pages/index');
 });
-
 app.get('/', (req, res) => {
+  let SQL = `SELECT * FROM books`;
+  client.query(SQL)
+    .then(data => {
+      res.render('pages/index', {result: data.rows});
+    })
   res.render('pages/index');
-});
 
+});
 app.get('/searches', (req, res) => {
   res.render('pages/searches/show', {
     booksArray: booksArray
   });
 });
-
 app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
 app.post('/searches', createSearch);
-
 app.get('*', (req, res) => {
   res.render('pages/error', { error: new Error('Page not found') });
 });
 
+//database config
+client.connect();
+client.on('error', err => console.log(err));
+
 var booksArray = [];
 
 function createSearch(req, res) {
+
+
   let url = 'https://www.googleapis.com/books/v1/volumes?maxResults=10&projection=full&q=';
   if (req.body.search[1] === 'title') {
     url += `+intitle:${req.body.search[0]}`;
@@ -52,7 +63,7 @@ function createSearch(req, res) {
     url += `+inauthor:${req.body.search[0]}`;
   }
   superagent.get(url)
-  
+
     .then(data => {
       data.body.items.map((item) => booksArray.push(new Book(item)));
       res.render('pages/searches/show', { booksArray: booksArray });
