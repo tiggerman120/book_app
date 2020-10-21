@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
     .then(data => {
       res.render('pages/index', {result: data.rows});
     })
+    
   res.render('pages/index');
 
 });
@@ -74,6 +75,14 @@ function createSearch(req, res) {
     });
 }
 
+function databaseStorage(bookData) {
+  let sql = 'INSERT INTO books (title, author, description, image_url) VALUES ($1, $2, $3, $4)'
+  //controller
+  let sqlArr = [bookData.title, bookData.author, bookData.description, bookData.thumbnail];
+  //controller
+  client.query(sql, sqlArr);//this asks the sql client for the information
+  //request asks postgres
+}
 app.listen(PORT, () => {
   console.log('server is up at ' + PORT);
 });
