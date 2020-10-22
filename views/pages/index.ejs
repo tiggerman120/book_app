@@ -2,14 +2,13 @@
 <html>
 
 <head>
-    <title>Book App</title>
-    <link rel="stylesheet" type="text/css" href="/styles/reset.css">
-    <link rel="stylesheet" type="text/css" href="/styles/base.css">
-    <link rel="stylesheet" type="text/css" href="/styles/layout.css">
-    <link rel="stylesheet" type="text/css" href="/styles/modules.css">
+    <%- include('../layout/head') %>
 </head>
 
 <body>
+    <header>
+      <%- include('../layout/header') %>
+    </header>
     <h1>Hello World!</h1>
     <h2>Click below to search through Google Books API
         <br><a href="/searches/new">CLICK HERE</a>
@@ -18,15 +17,19 @@
     <ul>
         <% booksArray.forEach(book => {%>
         <li class="bookResult">
-            <img class ="bookImage" src="<%= book.img %>"" />
+            <img class ="bookImage" src="<%= book.img %>" />
             <p class = "bookTitle"><%= book.title %></p>
             <p class="bookAuthor"><em><%= book.author %></em></p>
             <p class="bookDescription"><%= book.description %></p>
+            <p class="bookIsbn"><%= book.isbn %></p>
+            <p class="bookshelf"><%= book.bookshelf %></p>
             <form action="/" method="post"></form>
         </li>
         <%}) %>
     </ul>
-
+<footer>
+    <%- include('../layout/footer') %>
+</footer>
 </body>
 
 </html>
