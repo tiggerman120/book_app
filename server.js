@@ -114,7 +114,7 @@ function saveOneBook(req, res) {
   client.query(sql, sqlArr)//this asks the sql client for the information
     //request asks postgres
     .then( item => {
-      res.redirect(`/tasks/${item.rows[0].id}`)    
+      res.redirect(`/books/${item.rows[0].id}`)    
       })      
     .catch(err => console.error(err))
   }
