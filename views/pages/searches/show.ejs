@@ -2,12 +2,13 @@
 <html>
 
 <head>
-    <title>Results</title>
-    <link rel="stylesheet" type="text/css" href="/styles/base.css">
+    <%- include ('../layout/head') %>
 </head>
 
 <body>
-    
+    <header>
+        <%- include ('../layout/header') %>
+    </header>
     <main>
         
         <ul>
@@ -18,6 +19,7 @@
                 <p class="bookAuthor"><em><%= book.author %></em></p>
                 <p class="bookDescription"><%= book.description %></p>
                 <p class="bookIsbn"><%= book.isbn %></p>
+                <p class="bookshelf"><%= book.bookshelf %></p>
                 <form action="/books" method="post">
                 <input type="hidden" name="title" value="<%=book.title %>">
                 <input type="hidden" name="author" value="<%=book.author %>">
@@ -30,6 +32,9 @@
         </ul>
         <a href="/">home</a>
     </main>
+    <footer>
+        <%- include ('../layout/footer') %>
+    </footer>
 </body>
 
 </html>

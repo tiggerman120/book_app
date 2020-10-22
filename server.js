@@ -14,13 +14,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 app.use(methodOverride('_method')); //method override is the hack for put/delete on the browser
-app.get('/tasks/:id', getOneId)///here
 const superagent = require('superagent');
 
 //server constants
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL)
 
+app.get('/books/:id', getOneId)///here
 
 app.get('/', putOnIndex)
 
@@ -65,8 +65,11 @@ function createSearch(req, res) {
   }
   superagent.get(url)
     .then(data => {
+
       var booksToRender = data.body.items
-      console.log(booksToRender);
+      
+      console.log(booksToRender)
+
       var instance = booksToRender.map((item) => (new Book(item)));
       // res.render('pages/index', { booksArray: instance });
       res.render('pages/searches/show', { booksArray: instance });
@@ -103,6 +106,7 @@ function Book(bookData) {
   this.author = bookData.volumeInfo.authors ? bookData.volumeInfo.authors : `Book Authors Unknown`;
   this.description = bookData.volumeInfo.description ? bookData.volumeInfo.description : `Book description unavailable`;
   this.isbn = bookData.volumeInfo.industryIdentifiers[1] ? bookData.volumeInfo.industryIdentifiers[1].identifier : 'not available';
+  this.bookshelf = 'fiction';
 }
 
 function saveOneBook(req, res) {
@@ -112,20 +116,21 @@ function saveOneBook(req, res) {
   let sqlArr = [title, author, description, thumbnail];
 
   client.query(sql, sqlArr)//this asks the sql client for the information
-    //request asks postgres
+  //request asks postgres
+
     .then(item => {
-      res.redirect(`/tasks/${item.rows[0].id}`)
+      res.redirect(`/books/${item.rows[0].id}`)
     })
     .catch(err => console.error(err))
 }
 ////here
 function getOneId(req, res) {
   let SQL = 'SELECT * FROM books WHERE id=$1';
-  let values = [req.body.rows];
+  let values = [req.params.id];
 
   return client.query(SQL, values)
     .then(data => {
-      console.log(data)
+      // let oneBook = new Book(data);
       res.render('pages/books/detail.ejs', { booksArray: data.rows[0] }) //sending back single book
     })
     .catch(err => console.error(err));
@@ -135,3 +140,4 @@ function getOneId(req, res) {
 app.listen(PORT, () => {
   console.log('server is up at ' + PORT);
 });
+

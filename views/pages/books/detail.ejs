@@ -1,19 +1,26 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-
+    <%- include('../layout/head') %>
 </head>
 <body>
-    <section>
-        <% book.forEach(book => {%>
+    <header>
+        <%- include('../layout/header') %>
+    </header>
+    <section>    
             <li class="singleBookResult">
-                <img class ="bookImage" src="<%= book.img %>" />
-                <p class = "bookTitle"><%= book.title %></p>
-                <p class="bookAuthor"><em><%= book.author %></em></p>
-                <p class="bookDescription"><%= book.description %></p>
+                <img class ="bookImage" src="<%= booksArray.thumbnail %>" />
+                <p class = "bookTitle"><%= booksArray.title %></p>
+                <p class="bookAuthor"><em><%= booksArray.author %></em></p>
+                <p class="bookDescription"><%= booksArray.description %></p>
+                <p class="bookIsbn"><%= booksArray.isbn %></p>
+                <p class="bookshelf"><%= booksArray.bookshelf %></p>
                 <form action="/" method="post"></form>
-                <%}) %>
             </li>
+            <a href="/searches/new">home</a>
     </section>
+    <footer>
+        <%- include('../layout/footer') %>
+    </footer>
 </body>
 </html>
