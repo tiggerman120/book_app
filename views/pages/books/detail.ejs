@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <%- include('../layout/head') %>
+    <%- include('../../layout/head') %>
 </head>
 <body>
     <header>
-        <%- include('../layout/header') %>
+        <%- include('../../layout/header') %>
     </header>
     <section>    
             <li class="singleBookResult">
@@ -17,10 +17,10 @@
                 <p class="bookshelf"><%= booksArray.bookshelf %></p>
                 <form action="/" method="post"></form>
             </li>
-            <a href="/searches/new">home</a>
+            <a href="/searches/new">New Search</a>
     </section>
     <footer>
-        <%- include('../layout/footer') %>
+        <%- include('../../layout/footer') %>
     </footer>
 </body>
 </html>
