@@ -19,14 +19,15 @@ const superagent = require('superagent');
 //server constants
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL)
+client.on('error', err => console.log(err));
 
-app.get('/books/:id', getOneId)///here
-
-app.get('/', putOnIndex)
-
+app.get('/', putOnIndex);
+app.get('/books/:id', getOneId);///here
 app.get('/hello', (req, res) => {
   res.render('pages/index');
 });
+
+
 // app.get('/searches', (req, res) => {
 //   res.render('pages/searches/show', {
 //     booksArray: booksArray
@@ -43,13 +44,10 @@ app.post('/books', saveOneBook)
 
 app.post('/searches/new', createSearch);
 
-app.get('*', (req, res) => {
-  res.render('pages/error', { error: new Error('Page not found') });
-});
 
-//database config
-client.connect();
-client.on('error', err => console.log(err));
+
+
+
 
 
 
@@ -67,7 +65,7 @@ function createSearch(req, res) {
     .then(data => {
 
       var booksToRender = data.body.items
-      
+
       console.log(booksToRender)
 
       var instance = booksToRender.map((item) => (new Book(item)));
@@ -80,13 +78,19 @@ function createSearch(req, res) {
     });
 }
 function putOnIndex(req, res) {
-  let insert = 'SELECT * FROM books';
+  // res.redirect('pages/searches/new')
+  let insert = 'SELECT * FROM books;';
   return client.query(insert)
     .then(data => {
+      if (data.rows.rowCount === 0) {
+        res.render('pages/searches/new')
+      } else {
+        res.render('pages/index', { booksArray: data.rows });
+      }
       // console.log(data);
       // var instance = data.body.item.map((item) => booksArray.push(new Book(item)));
-      res.render('pages/index', { booksArray: data.rows });
     })
+    .catch(err => console.error(err));
 }
 
 function Book(bookData) {
@@ -110,10 +114,10 @@ function Book(bookData) {
 }
 
 function saveOneBook(req, res) {
-  const { title, author, description, thumbnail } = req.body
-  let sql = 'INSERT INTO books (title, author, description, thumbnail) VALUES ($1, $2, $3, $4) RETURNING id;'
+  const { title, author, description, thumbnail, isbn, bookshelf } = req.body
+  let sql = 'INSERT INTO books (title, author, description, thumbnail, isbn, bookshelf) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;'
   //controller / destructuring
-  let sqlArr = [title, author, description, thumbnail];
+  let sqlArr = [title, author, description, thumbnail, isbn, bookshelf];
 
   client.query(sql, sqlArr)//this asks the sql client for the information
   //request asks postgres
@@ -137,7 +141,16 @@ function getOneId(req, res) {
 }
 /////here
 
-app.listen(PORT, () => {
-  console.log('server is up at ' + PORT);
+
+//error route
+app.get('*', (req, res) => {
+  res.render('pages/error', { error: new Error('Page not found') });
 });
 
+//database config
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log('server is up at ' + PORT);
+    });
+  })
