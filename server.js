@@ -5,6 +5,7 @@ const express = require('express');
 const env = require('dotenv');
 const app = express();
 const pg = require('pg');
+const methodOverride = require('method-override');
 
 env.config();
 
@@ -12,45 +13,43 @@ env.config();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
-
+app.use(methodOverride('_method')); //method override is the hack for put/delete on the browser
 const superagent = require('superagent');
 
 //server constants
 const PORT = process.env.PORT || 3000;
 const client = new pg.Client(process.env.DATABASE_URL)
+client.on('error', err => console.log(err));
 
-
-
+app.get('/', putOnIndex);
+app.get('/books/:id', getOneId);///here
 app.get('/hello', (req, res) => {
   res.render('pages/index');
 });
-app.get('/', (req, res) => {
-  let SQL = `SELECT * FROM books`;
-  client.query(SQL)
-    .then(data => {
-      res.render('pages/index', {result: data.rows});
-    })
-  res.render('pages/index');
 
-});
-app.get('/searches', (req, res) => {
-  res.render('pages/searches/show', {
-    booksArray: booksArray
-  });
-});
+
+// app.get('/searches', (req, res) => {
+//   res.render('pages/searches/show', {
+//     booksArray: booksArray
+//   });
+// });
 app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
-app.post('/searches', createSearch);
-app.get('*', (req, res) => {
-  res.render('pages/error', { error: new Error('Page not found') });
+app.get('/searches/index', (req, res) => {
+  res.render('pages/index');
 });
 
-//database config
-client.connect();
-client.on('error', err => console.log(err));
+app.post('/books', saveOneBook)
 
-var booksArray = [];
+app.post('/searches/new', createSearch);
+
+
+
+
+
+
+
 
 function createSearch(req, res) {
 
@@ -63,23 +62,38 @@ function createSearch(req, res) {
     url += `+inauthor:${req.body.search[0]}`;
   }
   superagent.get(url)
-
     .then(data => {
-      data.body.items.map((item) => booksArray.push(new Book(item)));
-      res.render('pages/searches/show', { booksArray: booksArray });
+
+      var booksToRender = data.body.items
+
+      console.log(booksToRender)
+
+      var instance = booksToRender.map((item) => (new Book(item)));
+      // res.render('pages/index', { booksArray: instance });
+      res.render('pages/searches/show', { booksArray: instance });
     })
     .catch(err => {
       console.error(err);
       res.render('pages/error', { error: err });
     });
 }
-
-app.listen(PORT, () => {
-  console.log('server is up at ' + PORT);
-});
+function putOnIndex(req, res) {
+  // res.redirect('pages/searches/new')
+  let insert = 'SELECT * FROM books;';
+  return client.query(insert)
+    .then(data => {
+      if (data.rows.rowCount === 0) {
+        res.render('pages/searches/new')
+      } else {
+        res.render('pages/index', { booksArray: data.rows });
+      }
+      // console.log(data);
+      // var instance = data.body.item.map((item) => booksArray.push(new Book(item)));
+    })
+    .catch(err => console.error(err));
+}
 
 function Book(bookData) {
-  console.log(bookData);
   if (bookData.volumeInfo.imageLinks && bookData.volumeInfo.imageLinks.thumbnail) {
 
     if (!bookData.volumeInfo.imageLinks.thumbnail.startsWith('https')) {
@@ -95,5 +109,48 @@ function Book(bookData) {
   this.title = bookData.volumeInfo.title ? bookData.volumeInfo.title : `Book Title (Unknown)`;
   this.author = bookData.volumeInfo.authors ? bookData.volumeInfo.authors : `Book Authors Unknown`;
   this.description = bookData.volumeInfo.description ? bookData.volumeInfo.description : `Book description unavailable`;
+  this.isbn = bookData.volumeInfo.industryIdentifiers[1] ? bookData.volumeInfo.industryIdentifiers[1].identifier : 'not available';
+  this.bookshelf = 'fiction';
 }
 
+function saveOneBook(req, res) {
+  const { title, author, description, thumbnail, isbn, bookshelf } = req.body
+  let sql = 'INSERT INTO books (title, author, description, thumbnail, isbn, bookshelf) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;'
+  //controller / destructuring
+  let sqlArr = [title, author, description, thumbnail, isbn, bookshelf];
+
+  client.query(sql, sqlArr)//this asks the sql client for the information
+  //request asks postgres
+
+    .then(item => {
+      res.redirect(`/books/${item.rows[0].id}`)
+    })
+    .catch(err => console.error(err))
+}
+////here
+function getOneId(req, res) {
+  let SQL = 'SELECT * FROM books WHERE id=$1';
+  let values = [req.params.id];
+
+  return client.query(SQL, values)
+    .then(data => {
+      // let oneBook = new Book(data);
+      res.render('pages/books/detail.ejs', { booksArray: data.rows[0] }) //sending back single book
+    })
+    .catch(err => console.error(err));
+}
+/////here
+
+
+//error route
+app.get('*', (req, res) => {
+  res.render('pages/error', { error: new Error('Page not found') });
+});
+
+//database config
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log('server is up at ' + PORT);
+    });
+  })

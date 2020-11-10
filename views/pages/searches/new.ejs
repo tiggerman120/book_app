@@ -2,19 +2,17 @@
 <html>
 
 <head>
-    <title>Search For Books</title>
-    <link rel="stylesheet" type="text/css" href="/styles/base.css">
+    <%- include('../../layout/head') %>
 </head>
 
 <body>
     <header>
-        <div id="headerDiv">
-            <h1 id="headerBooks">Best Books!</h1><img src="/assets/burgerMenu.jpg" id="burgerMenu">
+        <%- include('../../layout/header') %>
         </div>
         <h2>Search by Title or Author</h2>
     </header>
     <main>
-        <form action="/searches" method="post">
+        <form action="/searches/new" method="post">
             <fieldset>
                 <input class="inputQuery" type="text" name="search" placeholder="Enter Title or Author" required>
             </fieldset>
@@ -26,6 +24,9 @@
             <button type="submit">Search GBooks API</button>
         </form>
     </main>
+    <footer>
+        <%- include('../../layout/footer') %>
+    </footer>
 </body>
 
 </html>
